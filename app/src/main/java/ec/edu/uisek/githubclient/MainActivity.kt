@@ -1,13 +1,13 @@
 package ec.edu.uisek.githubclient
 
+import android.content.Intent
 import android.os.Bundle
-import android.os.Message
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ec.edu.uisek.githubclient.databinding.ActivityMainBinding
-import ec.edu.uisek.githubclient.services.RetrofitClient
 import ec.edu.uisek.githubclient.models.Repo
 import ec.edu.uisek.githubclient.services.GithubApiService
+import ec.edu.uisek.githubclient.services.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,6 +23,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupRecyclerView()
+
+        binding.newRepoFab.setOnClickListener {
+            displayNewRepoForm()
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         fetchRepositories()
     }
 
@@ -30,38 +39,48 @@ class MainActivity : AppCompatActivity() {
         reposAdapter = ReposAdapter()
         binding.reposRecyclerView.adapter = reposAdapter
     }
-    private fun fetchRepositories(){
-        val apiService : GithubApiService = RetrofitClient.gitHubApiService
+
+    private fun fetchRepositories() {
+        val apiService: GithubApiService = RetrofitClient.gitHubApiService
         val call = apiService.getRepos()
+
         call.enqueue(object : Callback<List<Repo>> {
             override fun onResponse(call: Call<List<Repo>?>, response: Response<List<Repo>?>) {
-                if(response.isSuccessful){
-                    val repos =response.body()
-                    if(repos != null && repos.isNotEmpty()){
+                if (response.isSuccessful) {
+                    val repos = response.body()
+                    if (repos != null && repos.isNotEmpty()) {
                         reposAdapter.updateRepositories(repos)
-                    } else{
-                        showManssage("No se encontraron repositorios")
+                    } else {
+                        showMessage("No se encontraron repositorios")
                     }
 
                 } else {
                     val errorMessage = when (response.code()) {
-                        401 -> "Error 401: No autorizado"
-                        403 -> "Error 403: Prohibido"
-                        404 -> "Error 404: No encontrado"
-                        else -> "Error desconocido ${response.code()}"
+                        401 -> "No autorizado"
+                        403 -> "Prohibido"
+                        404 -> "No encontrado"
+                        else -> "Error ${response.code()}"
                     }
-                    showManssage("Error: $errorMessage")
+                    showMessage("Error: $errorMessage")
+
                 }
             }
-            override fun onFailure(call: Call<List<Repo>?>, t: Throwable) {
-                TODO("Not yet implemented")
+
+
+            override fun onFailure(call: Call<List<Repo>>, t: Throwable) {
+                showMessage("No se pudieron cargar repositorios")
             }
-
         })
-
     }
-    private fun showManssage(message: String){
+
+    private fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun displayNewRepoForm() {
+        Intent(this, RepoForm::class.java).apply {
+            startActivity(this)
+        }
     }
 
 }
