@@ -7,39 +7,54 @@ import com.bumptech.glide.Glide
 import ec.edu.uisek.githubclient.databinding.FragmentRepoitemBinding
 import ec.edu.uisek.githubclient.models.Repo
 
-class ReposViewHolder(private val binding: FragmentRepoitemBinding) :
-    RecyclerView.ViewHolder(binding.root) {
+class ReposViewHolder(
+    private val binding: FragmentRepoitemBinding,
+    private val onEditClick: (Repo) -> Unit,
+    private val onDeleteClick: (Repo) -> Unit
+) : RecyclerView.ViewHolder(binding.root) {
+
     fun bind(repo: Repo) {
         binding.repoName.text = repo.name
         binding.repoDescription.text = repo.description
-        binding.repoLang.text = repo.lenguage
+        binding.repoLang.text = repo.lenguage ?: "No especificado"
+
         Glide.with(binding.root.context)
             .load(repo.owner.avatarUrl)
             .placeholder(R.mipmap.ic_launcher)
             .error(R.mipmap.ic_launcher)
             .circleCrop()
             .into(binding.repoOwnerImagen)
+
+        // Configurar los listeners de los botones
+        binding.editButton.setOnClickListener { onEditClick(repo) }
+        binding.deleteButton.setOnClickListener { onDeleteClick(repo) }
     }
 }
 
-class ReposAdapter: RecyclerView.Adapter<ReposViewHolder>() {
-    private var repositories : List<Repo> = emptyList()
+class ReposAdapter(
+    private val onEditClick: (Repo) -> Unit = {},
+    private val onDeleteClick: (Repo) -> Unit = {}
+) : RecyclerView.Adapter<ReposViewHolder>() {
+
+    private var repositories: List<Repo> = emptyList()
+
     override fun getItemCount(): Int = repositories.size
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReposViewHolder {
-        var binding = FragmentRepoitemBinding.inflate(
+        val binding = FragmentRepoitemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
-        return ReposViewHolder(binding)
+        return ReposViewHolder(binding, onEditClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: ReposViewHolder, position: Int) {
         holder.bind(repositories[position])
     }
+
     fun updateRepositories(newRepositories: List<Repo>) {
         repositories = newRepositories
         notifyDataSetChanged()
-
     }
 }

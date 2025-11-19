@@ -16,17 +16,22 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // ... dentro de defaultConfig { ... }
+
         val envFile = rootProject.file(".env")
         val githubToken = if (envFile.exists()) {
-            envFile.readLines()
-                .firstOrNull { it.startsWith("GITHUB_API_TOKEN=") }
+            // La primera llamada encadenada va en la misma línea o con el punto al final de la anterior
+            envFile.readLines().firstOrNull { it.startsWith("GITHUB_API_TOKEN=") }
                 ?.substringAfter("GITHUB_API_TOKEN=")
                 ?.trim()
-                ?:""
-        } else{
+                ?: ""
+        } else {
             ""
         }
         buildConfigField("String", "GITHUB_API_TOKEN", "\"$githubToken\"")
+
+
+
     }
 
     buildTypes {

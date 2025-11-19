@@ -8,7 +8,17 @@
     <string name="text_lang">Kotlin</string>
     <string name="cancel">Cancelar</string>
     <string name="save">Guardar"</string>
+    <string name="edit_repo">Editar repositorio</string>
+    <string name="delete_repo">Eliminar repositorio</string>
+    <string name="create_new_repo">Crear nuevo repositorio</string>
+    <string name="edit_repository">Editar repositorio</string>
+    <string name="delete_confirmation">¿Estás seguro de que quieres eliminar este repositorio?</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
 
 
 
 </resources>
+
+
+
