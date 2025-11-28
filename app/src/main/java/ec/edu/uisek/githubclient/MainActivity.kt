@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        apiService = RetrofitClient.gitHubApiService
+        apiService = RetrofitClient.getApiService()
         setupRecyclerView()
 
         binding.newRepoFab.setOnClickListener {
